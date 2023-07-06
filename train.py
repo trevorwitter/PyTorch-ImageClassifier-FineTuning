@@ -56,13 +56,16 @@ def main(epochs=1, gpu=False, num_workers=1):
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ])
 
-    train_data = torchvision.datasets.Food101(root="./data",
-                                            split="train",
-                                            transform=transform
-                                            )
-    val_data = torchvision.datasets.Food101(root="./data",
-                                            split="test",
-                                            transform=transform)
+    data = torchvision.datasets.Food101(root="./data",
+                                    split="train",
+                                    transform=transform
+                                    )
+                                    
+    train_data, val_data = torch.utils.data.random_split(
+        data, 
+        [.8,.2],
+        torch.Generator().manual_seed(42)
+        )
 
     train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=128, shuffle=True, num_workers=num_workers)
     val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=128, shuffle=False, num_workers=num_workers)
