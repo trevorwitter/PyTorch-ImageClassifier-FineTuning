@@ -1,4 +1,5 @@
 import os
+import argparse
 import datetime
 import numpy as np
 import pandas as pd
@@ -11,13 +12,27 @@ from torchvision import transforms
 from torchvision.io import read_image
 from PIL import Image
 from model import ConvNet
+from utils import accuracy_score
 
+
+def arg_parse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--workers", default=1, type=int, help="Number of workers")
+    parser.add_argument("--gpu", default=False, type=bool, help="Train on GPU True/False")
+    parser.add_argument("--epochs", default=1, type=int, help="Number of training epochs")
+    return parser.parse_args()
+    
 
 def training_loop(net, trainloader, valloader, gpu=False, epochs=1):
     if gpu == False:
         device = torch.device("cpu")
     elif gpu == True:
-        device = torch.device("mps")
+        if torch.cuda.is_available():
+            device = torch.device('cuda')
+        elif torch.backends.mps.is_available():
+            device = torch.device("mps")
+        else:
+            device = torch.device("cpu")
     net = net.to(device)
     
     criterion = nn.CrossEntropyLoss()
@@ -60,7 +75,7 @@ def main(epochs=1, gpu=False, num_workers=1):
                                     split="train",
                                     transform=transform
                                     )
-                                    
+
     train_data, val_data = torch.utils.data.random_split(
         data, 
         [.8,.2],
@@ -75,12 +90,9 @@ def main(epochs=1, gpu=False, num_workers=1):
 
 
 if __name__ == "__main__":
-    epochs=1
-    gpu=True
-    num_workers=8
-    
+    args = arg_parse()    
     main(
-        epochs=epochs,
-        gpu=gpu, 
-        num_workers=num_workers,
+        epochs=args.epochs,
+        gpu=args.gpu, 
+        num_workers=args.workers,
         )
