@@ -7,4 +7,4 @@ Models:
 - AlexNet
 - Inception V3
 - ResNet
-- VisonTransformer
+- VisionTransformer

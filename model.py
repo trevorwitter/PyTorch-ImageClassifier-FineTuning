@@ -8,6 +8,8 @@ import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torchvision.models import resnet50, ResNet50_Weights
+
 
 class ConvNet(nn.Module):
     def __init__(self):
@@ -26,4 +28,20 @@ class ConvNet(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
+        return x
+
+
+class ResNet(nn.Module):
+    def __init__(self,frozen_weights=True):
+        super().__init__()
+        self.weights = ResNet50_Weights.IMAGENET1K_V2
+        self.pretrained = resnet50(weights=self.weights)
+        self.fc2 = nn.Linear(in_features=1000, out_features=101, bias=True)
+        if frozen_weights == True:
+            for p in self.pretrained.parameters():
+                p.requires_grad = False
+    
+    def forward(self, x):
+        x = self.pretrained(x)
+        x = self.fc2(x)
         return x
