@@ -45,3 +45,9 @@ class ResNet(nn.Module):
         x = self.pretrained(x)
         x = self.fc2(x)
         return x
+
+def resnet():
+    net = resnet50(weights=ResNet50_Weights.IMAGENET1K_V2)
+    net.fc = nn.Linear(in_features=2048, out_features=101, bias=True)
+    transforms = ResNet50_Weights.IMAGENET1K_V2.transforms()
+    return transforms, net

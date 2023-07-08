@@ -11,7 +11,7 @@ import torchvision
 from torchvision import transforms
 from torchvision.io import read_image
 from PIL import Image
-from model import ConvNet, ResNet
+from model import ConvNet, resnet #ResNet
 from utils import accuracy_score
 
 
@@ -21,6 +21,7 @@ def arg_parse():
     parser.add_argument("--workers", default=8, type=int, help="Number of workers")
     parser.add_argument("--gpu", default=True, type=bool, help="Train on GPU True/False")
     parser.add_argument("--epochs", default=1, type=int, help="Number of training epochs")
+    parser.add_argument("--warm_start", default=False, type=bool, help="Loads trained model")
     return parser.parse_args()
     
 
@@ -65,7 +66,7 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
     print(f'Training complete - model saved to {PATH}')
 
 
-def main(model='ConvNet', epochs=1, gpu=False, num_workers=1):
+def main(model='ConvNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
     print(f"Model: {model}")
     if model == 'ConvNet':
         net = ConvNet()
@@ -76,8 +77,12 @@ def main(model='ConvNet', epochs=1, gpu=False, num_workers=1):
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                 ])
     elif model == 'ResNet':
-        net = ResNet(frozen_weights=True)
-        transform = net.weights.transforms()
+        transform, net = resnet()
+
+    if warm_start == True:
+        PATH = f"./models/{model}.pth"
+        net.load_state_dict(torch.load(PATH))
+        print(f"Warm start - {model} model loaded")
 
     data = torchvision.datasets.Food101(root="./data",
                                     split="train",
@@ -104,4 +109,5 @@ if __name__ == "__main__":
         epochs=args.epochs,
         gpu=args.gpu, 
         num_workers=args.workers,
+        warm_start=args.warm_start,
         )
