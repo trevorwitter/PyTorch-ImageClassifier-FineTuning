@@ -29,19 +29,10 @@ class ConvNet(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+        
 
-
-class ResNet(nn.Module):
-    def __init__(self,frozen_weights=True):
-        super().__init__()
-        self.weights = ResNet50_Weights.IMAGENET1K_V2
-        self.pretrained = resnet50(weights=self.weights)
-        self.fc2 = nn.Linear(in_features=1000, out_features=101, bias=True)
-        if frozen_weights == True:
-            for p in self.pretrained.parameters():
-                p.requires_grad = False
-    
-    def forward(self, x):
-        x = self.pretrained(x)
-        x = self.fc2(x)
-        return x
+def resnet():
+    net = resnet50(weights=ResNet50_Weights.IMAGENET1K_V2)
+    net.fc = nn.Linear(in_features=2048, out_features=101, bias=True)
+    transforms = ResNet50_Weights.IMAGENET1K_V2.transforms()
+    return transforms, net
