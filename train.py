@@ -1,4 +1,5 @@
 import os
+import time
 import argparse
 import datetime
 import numpy as np
@@ -61,8 +62,10 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
         train_acc = accuracy_score(net, trainloader, gpu=gpu)
         val_acc = accuracy_score(net, valloader, gpu=gpu)
         print(f"Epoch {epoch} train_acc: {train_acc}, val_acc: {val_acc}")
-    PATH = f'./models/{model_name}.pth'
-    torch.save(net.state_dict(), PATH)
+        PATH = f'./models/{model_name}.pth'
+        torch.save(net.state_dict(), PATH)
+        time.sleep(300)
+
     print(f'Training complete - model saved to {PATH}')
 
 
@@ -80,6 +83,7 @@ def main(model='ConvNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
         transform, net = resnet()
 
     if warm_start == True:
+        print("warm start")
         PATH = f"./models/{model}.pth"
         net.load_state_dict(torch.load(PATH))
         print(f"Warm start - {model} model loaded")
@@ -98,7 +102,6 @@ def main(model='ConvNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
     train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=128, shuffle=True, num_workers=num_workers)
     val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=128, shuffle=False, num_workers=num_workers)
     
-    net = ConvNet()
     training_loop(net, train_dataloader, val_dataloader, gpu=gpu, epochs=epochs, model_name=model)
 
 
