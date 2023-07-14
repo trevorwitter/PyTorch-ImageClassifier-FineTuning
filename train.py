@@ -18,7 +18,7 @@ from utils import accuracy_score
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="ConvNet", type=str, help="Options: ConvNet, ResNet")
+    parser.add_argument("--model", default="ResNet", type=str, help="Options: ConvNet, ResNet")
     parser.add_argument("--workers", default=8, type=int, help="Number of workers")
     parser.add_argument("--gpu", default=True, type=bool, help="Train on GPU True/False")
     parser.add_argument("--epochs", default=1, type=int, help="Number of training epochs")
