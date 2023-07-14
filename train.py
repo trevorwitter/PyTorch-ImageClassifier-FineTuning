@@ -90,7 +90,8 @@ def main(model='ConvNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
 
     data = torchvision.datasets.Food101(root="./data",
                                     split="train",
-                                    transform=transform
+                                    transform=transform,
+                                    download=True,
                                     )
 
     train_data, val_data = torch.utils.data.random_split(
