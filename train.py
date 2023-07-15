@@ -37,12 +37,22 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
         else:
             device = torch.device("cpu")
     print(f"Training on {device.type}")
-    net = net.to(device)
+    
     
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    best_acc = 0.0
     for epoch in range(epochs): 
-        running_loss = 0.0
+        print(f'Epoch {epoch}/{epochs - 1}')
+        print('-' * 10)
+        net.train()
+        net = net.to(device)
+        train_running_loss = 0.0
+        train_running_corrects = 0
+        val_running_loss = 0.0
+        val_running_corrects = 0
+        
+        #Train
         for i, data in enumerate(trainloader, 0):
             inputs, labels = data
             inputs = inputs.to(device)
@@ -50,26 +60,42 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
             
             optimizer.zero_grad()
             outputs = net(inputs)
+            _, preds = torch.max(outputs, 1)
             train_loss = criterion(outputs, labels)
             train_loss.backward()
             optimizer.step()
             
-            # print statistics
-            running_loss += train_loss.item()
-            if i % 100 == 99:  # print every 100 mini-batches
-                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 100:.8f}')
-                running_loss = 0.0
-        train_acc = accuracy_score(net, trainloader, gpu=gpu)
-        val_acc = accuracy_score(net, valloader, gpu=gpu)
-        print(f"Epoch {epoch} train_acc: {train_acc}, val_acc: {val_acc}")
-        PATH = f'./models/{model_name}.pth'
-        torch.save(net.state_dict(), PATH)
-        time.sleep(300)
+            train_running_loss += train_loss.item() * inputs.size(0)
+            train_running_corrects += torch.sum(preds == labels.data)
+        train_loss = train_running_loss / len(trainloader.dataset)
+        train_acc = train_running_corrects.item() / len(trainloader.dataset)
+        print(f"Train Loss: {train_loss}, Train Acc: {train_acc}")
+        print("evaluation")
+
+        #Validation
+        net.eval()
+        for i, data in enumerate(valloader, 0):
+            inputs, labels = data
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+            outputs = net(inputs)
+            _, preds = torch.max(outputs, 1)
+            val_loss = criterion(outputs, labels)
+            val_running_loss += val_loss.item()
+            val_running_corrects += torch.sum(preds == labels.data)
+        
+        val_loss = val_running_loss / len(valloader.dataset)
+        val_acc = val_running_corrects.item() / len(valloader.dataset)
+        print(f"Val Loss: {val_loss}, val Acc: {val_acc}")
+        if val_acc > best_acc:
+            best_acc = val_acc
+            PATH = f'./models/{model_name}.pth'
+            torch.save(net.state_dict(), PATH)
 
     print(f'Training complete - model saved to {PATH}')
 
 
-def main(model='ConvNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
+def main(model='ResNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
     print(f"Model: {model}")
     if model == 'ConvNet':
         net = ConvNet()
