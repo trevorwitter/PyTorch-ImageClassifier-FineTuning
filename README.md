@@ -3,11 +3,11 @@
 Implementation of **Image Classification** models on [Food 101 Dataset](https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/) in **PyTorch**
 
 #### Table of Contents
-- [Dataset](##Dataset)
-- [Model Architechture](##Model-Architechture)
-- [Results](##Results)
-- [Quickstart](##Quickstart)
-    - [Training](###Training)
+1. [Dataset](#dataset)
+2. [Model Architechture](#Model-Architechture)
+3. [Results](#Results)
+4. [Quickstart](#Quickstart)
+    - [Training](#Training)
 
 
 
