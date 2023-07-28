@@ -16,7 +16,9 @@ Implementation of **Image Classification** models on [Food 101 Dataset](https://
 ![Food-101 Data Set](images/food-101.jpg)
 
 
-The **Food-101 data set** consists of 101 food categories, with 101,000 images in total. Each category includes 750 training images and 250 test images. 
+The **Food-101 data set** consists of 101 food categories, with 101,000 images in total. The dataset is split into pre-defined train and test sets. Each image category includes 750 training images and 250 test images. 
+
+For training, 20% of the training dataset is held and used for validation. All evaluation is performed on the test dataset. 
 
 ## Model Architecture
 
