@@ -12,13 +12,13 @@ import torchvision
 from torchvision import transforms
 from torchvision.io import read_image
 from PIL import Image
-from model import ConvNet, resnet #ResNet
+from model import ConvNet, alexnet, resnet18, resnet50
 from utils import accuracy_score
 
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="ResNet", type=str, help="Options: ConvNet, ResNet")
+    parser.add_argument("--model", default="ResNet", type=str, help="Options: ConvNet, alexnet, ResNet")
     parser.add_argument("--workers", default=8, type=int, help="Number of workers")
     parser.add_argument("--gpu", default=True, type=bool, help="Train on GPU True/False")
     parser.add_argument("--epochs", default=1, type=int, help="Number of training epochs")
@@ -105,8 +105,12 @@ def main(model='ResNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                 ])
-    elif model == 'ResNet':
-        transform, net = resnet()
+    elif model == 'resnet18':
+        transform, net = resnet18()
+    elif model == 'resnet50':
+        transform, net = resnet50()
+    elif model == 'alexnet':
+        transform, net = alexnet()
 
     if warm_start == True:
         print("warm start")
