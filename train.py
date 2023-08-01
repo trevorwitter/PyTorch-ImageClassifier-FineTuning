@@ -61,14 +61,10 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
             inputs, labels = data
             inputs = inputs.to(device)
             labels = labels.to(device)
-            
             if epoch == 0 and i == 0:
                 grid = torchvision.utils.make_grid(inputs)
                 tb.add_image('images', grid, 0)
                 tb.add_graph(net,inputs)
-                tb.add_figure('predictions vs. actuals',
-                    plot_classes_preds(net, inputs[:5], labels[:5], trainloader.dataset.dataset.classes),
-                    global_step=epoch)
             optimizer.zero_grad()
             outputs = net(inputs)
             _, preds = torch.max(outputs, 1)
@@ -95,9 +91,6 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
         tb.add_scalar('Accuracy/Training',
                     train_acc,
                     epoch)
-        tb.add_figure('predictions vs. actuals',
-                    plot_classes_preds(net, inputs[:5], labels[:5], trainloader.dataset.dataset.classes),
-                    global_step=epoch)
         print(f"Train Loss: {train_loss}, Train Acc: {train_acc}")
         print("evaluation")
 
@@ -123,6 +116,9 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
         tb.add_scalar('Accuracy/Validation',
                     val_acc,
                     epoch)
+        tb.add_figure('Validation Predictions vs. Actuals',
+                    plot_classes_preds(net, inputs[:5], labels[:5], trainloader.dataset.dataset.classes),
+                    global_step=epoch)
         print(f"Val Loss: {val_loss}, val Acc: {val_acc}")
         if val_acc > best_acc:
             best_acc = val_acc
