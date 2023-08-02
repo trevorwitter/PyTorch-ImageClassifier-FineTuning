@@ -13,7 +13,10 @@ from torchvision import transforms
 from torchvision.io import read_image
 from PIL import Image
 from model import ConvNet, alexnet, resnet18, resnet50
-from utils import accuracy_score
+from utils import accuracy_score, plot_classes_preds
+import torch
+from torch.utils.tensorboard import SummaryWriter
+
 
 
 def arg_parse():
@@ -38,10 +41,11 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
             device = torch.device("cpu")
     print(f"Training on {device.type}")
     
-    
+    tb = SummaryWriter(f'runs/{model_name}')
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
     best_acc = 0.0
+    step_count = 0
     for epoch in range(epochs): 
         print(f'Epoch {epoch}/{epochs - 1}')
         print('-' * 10)
@@ -57,20 +61,39 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
             inputs, labels = data
             inputs = inputs.to(device)
             labels = labels.to(device)
-            
+            if epoch == 0 and i == 0:
+                grid = torchvision.utils.make_grid(inputs)
+                tb.add_image('images', grid, 0)
+                tb.add_graph(net,inputs)
             optimizer.zero_grad()
             outputs = net(inputs)
             _, preds = torch.max(outputs, 1)
             train_loss = criterion(outputs, labels)
             train_loss.backward()
             optimizer.step()
-            
-            train_running_loss += train_loss.item() * inputs.size(0)
+            step_count += 1
+            train_running_loss += train_loss.item() #* inputs.size(0)
+            tb.add_scalar('training running loss',
+                            train_loss.item(),
+                            step_count)
             train_running_corrects += torch.sum(preds == labels.data)
+            #if i % 100 == 99:
+            #    tb.add_scalar('training running loss',
+            #                    train_running_loss / 99,
+            #                    epoch * len(trainloader) + i)
+            #    train_running_loss = 0.0
         train_loss = train_running_loss / len(trainloader.dataset)
         train_acc = train_running_corrects.item() / len(trainloader.dataset)
+        tb.add_scalar('Loss/Training',
+                    train_loss,
+                    epoch)
+
+        tb.add_scalar('Accuracy/Training',
+                    train_acc,
+                    epoch)
         print(f"Train Loss: {train_loss}, Train Acc: {train_acc}")
         print("evaluation")
+
 
         #Validation
         net.eval()
@@ -86,6 +109,16 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
         
         val_loss = val_running_loss / len(valloader.dataset)
         val_acc = val_running_corrects.item() / len(valloader.dataset)
+        tb.add_scalar('Loss/Validation',
+                    val_loss,
+                    epoch)
+
+        tb.add_scalar('Accuracy/Validation',
+                    val_acc,
+                    epoch)
+        tb.add_figure('Validation Predictions vs. Actuals',
+                    plot_classes_preds(net, inputs[:5], labels[:5], trainloader.dataset.dataset.classes),
+                    global_step=epoch)
         print(f"Val Loss: {val_loss}, val Acc: {val_acc}")
         if val_acc > best_acc:
             best_acc = val_acc
@@ -93,7 +126,7 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
             torch.save(net.state_dict(), PATH)
 
     print(f'Training complete - model saved to {PATH}')
-
+    tb.close()
 
 def main(model='ResNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
     print(f"Model: {model}")
@@ -117,7 +150,8 @@ def main(model='ResNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
         PATH = f"./models/{model}.pth"
         net.load_state_dict(torch.load(PATH))
         print(f"Warm start - {model} model loaded")
-
+    
+    
     data = torchvision.datasets.Food101(root="./data",
                                     split="train",
                                     transform=transform,
@@ -132,7 +166,6 @@ def main(model='ResNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
 
     train_dataloader = torch.utils.data.DataLoader(train_data, batch_size=128, shuffle=True, num_workers=num_workers)
     val_dataloader = torch.utils.data.DataLoader(val_data, batch_size=128, shuffle=False, num_workers=num_workers)
-    
     training_loop(net, train_dataloader, val_dataloader, gpu=gpu, epochs=epochs, model_name=model)
 
 

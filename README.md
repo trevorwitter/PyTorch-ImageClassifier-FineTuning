@@ -20,9 +20,15 @@ The **Food-101 data set** consists of 101 food categories, with 101,000 images i
 
 For training, 20% of the training dataset is held and used for validation. All evaluation is performed on the test dataset. 
 
-## Model Architecture
+## Model Architectures
 
-The model used is a [ResNet Convolutional Neural Network](https://arxiv.org/abs/1512.03385). For this task, a [PyTorch implementation of ResNet50 model](https://pytorch.org/vision/stable/models/resnet.html), pretrained on [ImageNet](https://image-net.org), was used, replacing the final fully-connected layer with a new 101 unit fully-connected layer. 
+#### AlexNet
+Pytorch implementation of [AlexNet](https://pytorch.org/vision/stable/models/alexnet.html) from [ImageNet Classification with Deep Convolutional Neural Networks](https://papers.nips.cc/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html) paper. Network is pretrained on [ImageNet](https://image-net.org) and final fully connected layer is replaced with a 101-unit fully connected layer.
+
+![AlexNet](images/AlexNet.png)
+#### ResNet18, ResNet50
+Implementation of models from [ResNet Convolutional Neural Network paper](https://arxiv.org/abs/1512.03385). For this task, [PyTorch implementations of ResNet18 and  ResNet50 models](https://pytorch.org/vision/stable/models/resnet.html), pretrained on [ImageNet](https://image-net.org), are used, replacing the final fully-connected layer with a new 101 unit fully-connected layer. 
+
 
 ![ResNet50 Architecture](images/resnet50.jpg)
 
@@ -32,6 +38,9 @@ The model used is a [ResNet Convolutional Neural Network](https://arxiv.org/abs/
 The final 1000-unit fully connected layer of the pretrained ResNet model is replaced with a 101-unit fully connected layer.
 
 ## Results
+See [tensorboard](https://tensorboard.dev/experiment/9sZqKSmnSnK6UQJbNExzlQ/#scalars&run=alexnet&runSelectionState=eyJhbGV4bmV0Ijp0cnVlLCJyZXNuZXQxOCI6dHJ1ZX0%3D&_smoothingWeight=0) for full training experiment results. 
+
+
 On the 25,250 image test set, the overall accuracy is **77%**. Accuracy varies by class and is shown below:
 
 ![Test Accuracy](images/test_acc_by_class.png)
