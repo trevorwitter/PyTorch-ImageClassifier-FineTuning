@@ -27,7 +27,7 @@ Pytorch implementation of [AlexNet](https://pytorch.org/vision/stable/models/ale
 
 ![AlexNet](images/AlexNet.png)
 #### ResNet18, ResNet50
-Implementation of models from [ResNet Convolutional Neural Network paper](https://arxiv.org/abs/1512.03385). For this task, [PyTorch implementations of ResNet18 and  ResNet50 models](https://pytorch.org/vision/stable/models/resnet.html), pretrained on [ImageNet](https://image-net.org), are used, replacing the final fully-connected layer with a new 101 unit fully-connected layer. 
+Implementation of models from [ResNet Convolutional Neural Network paper](https://arxiv.org/abs/1512.03385). For this task, [PyTorch implementations of ResNet18 and  ResNet50 models](https://pytorch.org/vision/stable/models/resnet.html), pretrained on [ImageNet](https://image-net.org), are used. 
 
 
 ![ResNet50 Architecture](images/resnet50.jpg)
@@ -35,7 +35,7 @@ Implementation of models from [ResNet Convolutional Neural Network paper](https:
 **Skip Connections** add the original input to the output of the convolutional block
 ![Skip Connection](images/skip_connection.jpg)
 
-The final 1000-unit fully connected layer of the pretrained ResNet model is replaced with a 101-unit fully connected layer.
+The final fully connected layer of the pretrained ResNet models is replaced with a 101-unit fully connected layer.
 
 ## Results
 See [tensorboard](https://tensorboard.dev/experiment/9sZqKSmnSnK6UQJbNExzlQ/#scalars&run=alexnet&runSelectionState=eyJhbGV4bmV0Ijp0cnVlLCJyZXNuZXQxOCI6dHJ1ZX0%3D&_smoothingWeight=0) for full training experiment results. 
