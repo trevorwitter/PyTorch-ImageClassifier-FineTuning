@@ -4,7 +4,7 @@ Implementation of **Image Classification** models on [Food 101 Dataset](https://
 
 #### Table of Contents
 - [Dataset](#dataset)
-- [Model Architecture](#model-architecture)
+- [Model Architectures](#model-architecture)
 - [Results](#results)
 - [Quickstart](#quickstart)
     - [Training](#training)
