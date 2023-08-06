@@ -12,7 +12,7 @@ import torchvision
 from torchvision import transforms
 from torchvision.io import read_image
 from PIL import Image
-from model import ConvNet, alexnet, resnet18, resnet50
+from model import AlexNet, ResNet18, ResNet50
 from utils import accuracy_score, plot_classes_preds
 import torch
 from torch.utils.tensorboard import SummaryWriter
@@ -21,7 +21,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="ResNet", type=str, help="Options: ConvNet, alexnet, ResNet")
+    parser.add_argument("--model", default="alexnet", type=str, help="Options: alexnet, resnet18, resnet50")
     parser.add_argument("--workers", default=8, type=int, help="Number of workers")
     parser.add_argument("--gpu", default=True, type=bool, help="Train on GPU True/False")
     parser.add_argument("--epochs", default=1, type=int, help="Number of training epochs")
@@ -128,22 +128,15 @@ def training_loop(net, trainloader, valloader, gpu=False, epochs=1, model_name='
     print(f'Training complete - model saved to {PATH}')
     tb.close()
 
-def main(model='ResNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
+def main(model='alexnet', epochs=1, gpu=False, num_workers=1, warm_start=False):
     print(f"Model: {model}")
-    if model == 'ConvNet':
-        net = ConvNet()
-        transform = transforms.Compose(
-                [transforms.Resize(256,antialias=True),
-                transforms.CenterCrop(224),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-                ])
+    if model == 'alexnet':
+        net = AlexNet()
     elif model == 'resnet18':
-        transform, net = resnet18()
+        net = ResNet18()
     elif model == 'resnet50':
-        transform, net = resnet50()
-    elif model == 'alexnet':
-        transform, net = alexnet()
+        net = ResNet50()
+    
 
     if warm_start == True:
         print("warm start")
@@ -154,7 +147,7 @@ def main(model='ResNet', epochs=1, gpu=False, num_workers=1, warm_start=False):
     
     data = torchvision.datasets.Food101(root="./data",
                                     split="train",
-                                    transform=transform,
+                                    transform=net.transform,
                                     download=True,
                                     )
 
