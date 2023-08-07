@@ -38,12 +38,16 @@ Implementation of models from [ResNet Convolutional Neural Network paper](https:
 The final fully connected layer of the pretrained ResNet models is replaced with a 101-unit fully connected layer.
 
 ## Results
-See [tensorboard](https://tensorboard.dev/experiment/9sZqKSmnSnK6UQJbNExzlQ/#scalars&run=alexnet&runSelectionState=eyJhbGV4bmV0Ijp0cnVlLCJyZXNuZXQxOCI6dHJ1ZX0%3D&_smoothingWeight=0) for full training experiment results. 
+See [tensorboard](https://tensorboard.dev/experiment/WxgJSmDbQt64EtJWyyc5wA/) for full training experiment results. Each model was trained for 10 epochs. 
 
 
-On the 25,250 image test set, the overall accuracy is **77%**. Accuracy varies by class and is shown below:
+On the **25,250 image test set**, the best overall accuracy was **77.9%**, via ResNet50 model:
 
-![Test Accuracy](images/test_acc_by_class.png)
+![Overall Accuracy](images/overall_accuracy.png)
+
+Accuracy varies by class and is shown below:
+
+![Test Accuracy by Class](images/test_acc_by_class.png)
 
 
 ## Quickstart
@@ -57,13 +61,14 @@ With [conda](https://docs.conda.io/en/main/miniconda.html) installed, create and
 ### Training
 
 ```bash
-python train.py --model Resnet --workers 8 --gpu True --epochs 1 --warm_start True
+python train.py --model resnet50 --workers 8 --gpu True --epochs 1 --warm_start True
 ```
 Optional parameters: 
 - `--model`
     - Specifies model to train: 
-        - `ConvNet`: Vanilla CNN 
-        - `Resnet`: Resnet 50, pretrained on Imagenet
+        - `alexnet`: AlexNet, pretrained on Imagenet
+        - `resnet18`: Resnet 18, pretrained on Imagenet
+        - `resnet50`: Resnet 50, pretrained on Imagenet
         - Can specify any new model by adding to `model.py`
 - `--workers`: specifies number of workers for dataloaders
 - `--gpu`: 
