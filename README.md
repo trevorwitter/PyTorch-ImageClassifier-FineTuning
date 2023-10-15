@@ -1,6 +1,6 @@
-# PyTorch Image Classification with Food 101 dataset
+# Fine-tuning Image Classification Models with PyTorch
 
-Implementation of **Image Classification** models on [Food 101 Dataset](https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/) in **PyTorch**
+Training scripts for modification, fine-tuning and evaluation of pretrained **Image Classification** models with **PyTorch** to classify a new dataset of interest. This example uses models pretrained on [ImageNet](https://image-net.org) (1000 general object classes) to make predictions on images in the [Food 101 Dataset](https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-101/) (101 food-specific classes). 
 
 #### Table of Contents
 - [Dataset](#dataset)
@@ -38,7 +38,7 @@ Implementation of models from [ResNet Convolutional Neural Network paper](https:
 The final fully connected layer of the pretrained ResNet models is replaced with a 101-unit fully connected layer.
 
 ## Results
-See [tensorboard](https://tensorboard.dev/experiment/WxgJSmDbQt64EtJWyyc5wA/) for full training experiment results. Each model was trained for 10 epochs. 
+See [tensorboard](https://tensorboard.dev/experiment/WxgJSmDbQt64EtJWyyc5wA/) for full training experiment results. Training was limited to 10 epochs; results for each model would improve with additional epochs.
 
 
 On the **25,250 image test set**, the best overall accuracy was **77.9%**, via ResNet50 model:
